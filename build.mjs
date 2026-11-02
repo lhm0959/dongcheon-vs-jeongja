@@ -17,9 +17,10 @@ md = md.replace(/^---\n([\s\S]*?)\n---\n/, (_, y) => {
 // 제목·리드 분리 (히어로에 쓴다)
 const h1 = md.match(/^# (.+)$/m)[1];
 md = md.replace(/^# .+\n/m, '');
-const leadMatch = md.match(/^기준일 2026-10-22\.[^\n]+$/m);
-const lead = leadMatch ? leadMatch[0] : '';
-if (leadMatch) md = md.replace(leadMatch[0], '');
+// 2026-11-02 갱신: 히어로 리드는 새 결론 요약으로 손으로 쓴다. 10-22 리드는 본문 첫 문단으로 남긴다.
+const lead = '기준일 2026-11-02. 10-22에 고른 매매 3건·전세 2건에 현 거주 유지와 운중동 다가구 전세를 더해 같은 틀로 다시 줄 세웠다. '
+  + '운중동은 대출 없이 같은 크기의 투룸을 주므로 2년 비용이 현 거주 유지와 사실상 같고, 대림아크로텔은 같은 투룸에 약 1,800만이 더 든다. '
+  + '매수는 수지구 거래량이 매수 조건(월 500건)에 못 미쳐 보류한다. 본인 자금 조건은 비공개.';
 
 // 위키링크 → 텍스트. positions는 비공개 기록이라 표시만.
 md = md.replace(/\[\[positions\/[^\]]+\]\]/g, '<span class="priv">본인 자금 기록 (비공개)</span>');
@@ -64,11 +65,11 @@ const tocHtml = toc.map((t) => `<a href="#${t.id}"><b>${t.num}</b>${t.short}</a>
 
 // 히어로의 순위 띠 — §1 표의 요약. 본문과 어긋나지 않게 손으로 맞춘다.
 const ranks = [
-  { n: 1, k: 'pick', v: '추천', name: '대림아크로텔 63㎡ 투룸 전세', price: '4억 6,000', why: '전세가율 71~77% · HUG 80%도 통과', href: 'https://fin.land.naver.com/articles/2653791448' },
-  { n: 2, k: 'buy', v: '매수 전환 시 1순위', name: '동천현대홈타운2차 84㎡', price: '12억', why: '205동 동향보다 204동 7층 남향(올확장) 먼저 · 11억 8,000 이하가 조건', href: 'https://fin.land.naver.com/articles/2656553304' },
-  { n: 3, k: 'buy', v: '12억이면 2위와 교체', name: '동천디이스트 510동 84㎡', price: '12억 3,000', why: '저층 · 감면선 밖 · 저층 6건 중 수리 범위 최대', href: 'https://fin.land.naver.com/articles/2655504319' },
-  { n: 4, k: 'hold', v: '보류', name: '벽산타운2단지 59㎡ 세안고', price: '10억 3,000', why: '비확장 · 입주 2028-02 · 취득세 감면 불가', href: 'https://fin.land.naver.com/articles/2653765059' },
-  { n: 5, k: 'out', v: '탈락', name: '정자푸르지오시티3차 42㎡ 전세', price: '4억 3,000', why: '방 1개 · 전세가율 86~110%', href: 'https://fin.land.naver.com/articles/2655171176' },
+  { n: '1', k: 'pick', v: '원룸으로 충분하면', name: '현 거주 유지 (갱신)', price: '추가 비용 0', why: '정자역 도보 · 갱신 뒤 3개월 통지로 언제든 해지', href: '#s1' },
+  { n: '1′', k: 'pick', v: '투룸이 필요하면', name: '운중동 다가구 65㎡ 투룸 전세', price: '2억 8,000', why: '2년 비용 현 거주와 같음 · 보증보험 가능(중개사 전언) · 버스만', href: 'https://fin.land.naver.com/articles/2658971662' },
+  { n: '3', k: 'hold', v: '3순위', name: '대림아크로텔 63㎡ 투룸 전세', price: '4억 6,000', why: '같은 투룸에 2년 약 +1,800만 · 정자역 도보 6분', href: 'https://fin.land.naver.com/articles/2653791448' },
+  { n: '4', k: 'buy', v: '매수는 거래량 회복 뒤', name: '동천현대홈타운2차 204동 84㎡', price: '12억', why: '11억 8,000 이하가 조건 · 2년 손익분기 +6%대', href: 'https://fin.land.naver.com/articles/2656553304' },
+  { n: '5', k: 'buy', v: '12억이면 4위와 교체', name: '동천디이스트 510동 84㎡', price: '12억 3,000', why: '저층 · 감면선 밖 · 저층 중 수리 범위 최대', href: 'https://fin.land.naver.com/articles/2655504319' },
 ];
 const rankHtml = ranks.map((r) => `
     <a class="rk ${r.k}" href="${r.href}" target="_blank" rel="noopener">
@@ -83,7 +84,7 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>${esc(h1)}</title>
-<meta name="description" content="동천 84㎡ 매수 2건·벽산 59㎡ 세안고·정자 오피스텔 전세 2건을 한 틀로 줄 세운 판단. 기준일 ${fm.updated}.">
+<meta name="description" content="현 거주 유지·운중동 다가구 전세·대림아크로텔 전세·동천 84㎡ 매수를 한 틀로 줄 세운 판단. 기준일 ${fm.updated}.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -188,7 +189,7 @@ footer p{margin:0 0 6px}
 <body>
 <header class="hero"><div class="in">
   <p class="eyebrow">부동산 판단 · 기준일 <b>${fm.updated}</b> · 신뢰도 <b>${fm.confidence}</b> · 앞선 보고서 <a href="https://lhm0959.github.io/byeoksan-vs-jeongja/">벽산 매수 vs 정자 전세</a></p>
-  <div class="seal">전세 1순위<small>대림아크로텔 · 매수 전환 시 동천 84㎡</small></div>
+  <div class="seal">투룸이면 운중동<small>아니면 현 거주 유지 · 대림은 3순위</small></div>
   <h1>${esc(h1)}</h1>
   <p class="lead">${lead.replace(/\[\[positions\/[^\]]+\]\]/g, '본인 자금 기록(비공개)').replace(/\[\[([^\]]+)\]\]/g, (_, n) => n.replace(/-/g, ' ')).replace(/\*\*/g, '')}</p>
   <div class="ranks">${rankHtml}
